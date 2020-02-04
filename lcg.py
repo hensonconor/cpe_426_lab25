@@ -1,6 +1,6 @@
 import random
 
-def lcg(n=2):
+def lcg(n=14):
 	random.seed()
 	a = random.randint(1, 255) 
 	b = random.randint(1, 255)
@@ -11,7 +11,6 @@ def lcg(n=2):
 		xi = (a * x0 + b) % M
 		num = bin(xi).replace("0b", "")
 		l = 8 - len(num)
-		print(l)
 		pad = ""
 		while l > 0:
 			pad += "0"
@@ -20,3 +19,5 @@ def lcg(n=2):
 		nums += new
 		x0 = xi
 	return nums
+
+print(lcg())

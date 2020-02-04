@@ -10,7 +10,6 @@ def generateN():
 		q = sympy.nextprime(q_seed)
 		N = p * q
 		if (N < 65536):
-			print(N)
 			return N
 	
 	
@@ -20,11 +19,12 @@ def bbs(width=16):
 	N = generateN()
 	bits = ""
 	bits += str(x0%2)
-	print(bits)
 	x = x0
-	for i in range(width):
+	for i in range(width-1):
 		xi = x * x
 		bits += str((xi% N)%2)
 		x = xi
 	return bits
 	
+for _ in range(7):
+	print(bbs(), end='')

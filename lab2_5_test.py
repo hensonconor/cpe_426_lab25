@@ -1,6 +1,8 @@
 #https://gist.github.com/StuartGordonReid
 import scipy.special as spc
 import math
+import numpy
+import copy
 
 def monobit_freq(input_str):
 	s_n = 0
@@ -34,7 +36,7 @@ def runs(input_str):
 	p_val = spc.erfc(float(num / den))
 	return p_val
 
-def non_overlapping_pattern(input_str, pattern="000000001", num_blocks=8):
+def non_overlapping_pattern(input_str, pattern="001", num_blocks=8):
 	n = len(input_str)
 	pattern_size = len(pattern)
 	block_size = math.floor(n / num_blocks)
@@ -61,8 +63,8 @@ def non_overlapping_pattern(input_str, pattern="000000001", num_blocks=8):
 	p_val = spc.gammaincc(num_blocks / 2, chi_squared / 2)
 	return p_val
 
-def overlapping_pattern(input_str, pattern_size=9, block_size=1032):
-	n - len(input_str)
+def overlapping_pattern(input_str, pattern_size=5, block_size=8):
+	n = len(input_str)
 	pattern = ""
 	for i in range(pattern_size):
 		pattern += "1"
@@ -70,10 +72,9 @@ def overlapping_pattern(input_str, pattern_size=9, block_size=1032):
 	lambda_val = float(block_size - pattern_size + 1) / pow(2, pattern_size)
 	eta = lambda_val / 2.0
 
-	piks = [self.get_prob(i, eta) for i in range(5)]
+	piks = [get_prob(i, eta) for i in range(5)]
 	diff = float(numpy.array(piks).sum())
 	piks.append(1.0 - diff)
-
 	pattern_counts = numpy.zeros(6)
 	for i in range(num_blocks):
 		block_start = i * block_size
@@ -94,7 +95,7 @@ def overlapping_pattern(input_str, pattern_size=9, block_size=1032):
 
 	chi_squared = 0.0
 	for i in range(len(pattern_counts)):
-		chi_squared += pow(pattern_counts[i] - num_blocks * piks[i], 2.0) / (num_blocks * piks[i])
+		chi_squared += (pow(pattern_counts[i] - num_blocks * piks[i], 2.0) / (num_blocks * piks[i]))
 	return spc.gammaincc(5.0 / 2.0, chi_squared / 2.0)
 
 def get_prob(u, x):
@@ -103,7 +104,7 @@ def get_prob(u, x):
     out = 1.0 * x * numpy.exp(2 * -x) * (2 ** -u) * spc.hyp1f1(u + 1, 2, x)
   return out
 
-def linear_complexity(self, bin_data, block_size=500):
+def linear_complexity(bin_data, block_size=500):
   dof = 6
   piks = [0.01047, 0.03125, 0.125, 0.5, 0.25, 0.0625, 0.020833]
 
@@ -122,7 +123,7 @@ def linear_complexity(self, bin_data, block_size=500):
 
     complexities = []
     for block in blocks:
-      complexities.append(self.berlekamp_massey_algorithm(block))
+      complexities.append(berlekamp_massey_algorithm(block))
 
       t = ([-1.0 * (((-1) ** block_size) * (chunk - mean) + 2.0 / 9) for chunk in complexities])
       vg = numpy.histogram(t, bins=[-9999999999, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 9999999999])[0][::-1]
@@ -136,7 +137,7 @@ def linear_complexity(self, bin_data, block_size=500):
   else:
     return -1.0
 
-def berlekamp_massey_algorithm(self, block_data):
+def berlekamp_massey_algorithm(block_data):
     n = len(block_data)
     c = numpy.zeros(n)
     b = numpy.zeros(n)
@@ -233,7 +234,7 @@ def random_excursions(bin_data):
     su.append([(sct == cycle).sum() for sct in state_count])
   su = numpy.transpose(su)
 
-  piks = ([([self.get_pik_value(uu, state) for uu in range(6)]) for state in x_values])
+  piks = ([([get_pik_value(uu, state) for uu in range(6)]) for state in x_values])
   inner_term = num_cycles * numpy.array(piks)
   chi = numpy.sum(1.0 * (numpy.array(su) - inner_term) ** 2 / inner_term, axis=1)
   p_values = ([spc.gammaincc(2.5, cs / 2.0) for cs in chi])
@@ -249,4 +250,48 @@ def get_pik_value(k, x):
   return out
 
 
-print(runs("1100100100001111110110101010001000100001011010001100001000110100110001001100011001100010100010111000"))
+string = "1100100100001111110110101010001000100001011010001100001000110100110001001100011001100010100010111000"
+string2 = "10100100101110010110"
+string3 = "10111011110010111000011100101110111110000101101001"
+string4 = "0110110101"
+
+
+lcg = "0011110110110110001011001010110110010011000011001011011100111010100011001000111110111001010101100100101010000111"
+bbs = "0000001111010111001000100101011011010010111111101001110111011111111110101010101000001010011001011111001000100111"
+xor = "1000001010100000010100110100010110100011010000001001011111100000010000000101000101010010000000000100000001010001"
+no_xor = "1110000000001111111110000000111100000000011110000000000000011000000100000000001111111100000000011111100000001111"
+print("LCG:")
+print("\tmono {}".format(monobit_freq(lcg))) #can do
+print("\truns {}".format(runs(lcg))) #can do
+print("\tnonover {}".format(non_overlapping_pattern(lcg, "001", 2))) #can do
+print("\tover {}".format(overlapping_pattern(lcg, 2, 10))) #unsure
+print("\tlinear {}".format(linear_complexity(lcg, 2))) #unsure
+print("\tapprox {}".format(approximate_entropy(lcg, 2))) #can do
+print("\trandom {}".format(random_excursions(lcg)[4])) #can do
+
+print("BBS:")
+print("\tmono {}".format(monobit_freq(bbs))) #can do
+print("\truns {}".format(runs(bbs))) #can do
+print("\tnonover {}".format(non_overlapping_pattern(bbs, "001", 2))) #can do
+print("\tover {}".format(overlapping_pattern(bbs, 2, 10))) #unsure
+print("\tlinear {}".format(linear_complexity(bbs, 2))) #unsure
+print("\tapprox {}".format(approximate_entropy(bbs, 2))) #can do
+print("\trandom {}".format(random_excursions(bbs)[4])) #can do
+
+print("XOR:")
+print("\tmono {}".format(monobit_freq(xor))) #can do
+print("\truns {}".format(runs(xor))) #can do
+print("\tnonover {}".format(non_overlapping_pattern(xor, "001", 2))) #can do
+print("\tover {}".format(overlapping_pattern(xor, 2, 10))) #unsure
+print("\tlinear {}".format(linear_complexity(xor, 2))) #unsure
+print("\tapprox {}".format(approximate_entropy(xor, 2))) #can do
+print("\trandom {}".format(random_excursions(xor)[4])) #can do
+
+print("NO XOR:")
+print("\tmono {}".format(monobit_freq(no_xor))) #can do
+print("\truns {}".format(runs(no_xor))) #can do
+print("\tnonover {}".format(non_overlapping_pattern(no_xor, "001", 2))) #can do
+print("\tover {}".format(overlapping_pattern(no_xor, 2, 10))) #unsure
+print("\tlinear {}".format(linear_complexity(no_xor, 2))) #unsure
+print("\tapprox {}".format(approximate_entropy(no_xor, 2))) #can do
+print("\trandom {}".format(random_excursions(no_xor)[4])) #can do
