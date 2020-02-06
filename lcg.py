@@ -1,7 +1,7 @@
 import random
 
 def lcg(n=14):
-	random.seed()
+	random.seed(123)
 	a = random.randint(1, 255) 
 	b = random.randint(1, 255)
 	x0 = random.randint(1, 255)
