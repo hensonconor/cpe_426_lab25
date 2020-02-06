@@ -3,7 +3,7 @@ import sympy
 
 def generateN():
 	while True:
-		random.seed()
+		random.seed(96)
 		p_seed = random.randint(1, 1024)
 		q_seed = random.randint(1, 1024)
 		p = sympy.nextprime(p_seed)
@@ -14,7 +14,7 @@ def generateN():
 	
 	
 def bbs(width=16):
-	random.seed()
+	random.seed(24)
 	x0 = random.randint(0, 65535)
 	N = generateN()
 	bits = ""
